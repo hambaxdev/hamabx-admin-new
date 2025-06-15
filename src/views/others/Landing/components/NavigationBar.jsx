@@ -79,7 +79,7 @@ const Navigation = ({ toggleMode, mode }) => {
                 <a href="/">
                     {mode === MODE_LIGHT && (
                         <img
-                            src="/img/logo/logo-light-full.png"
+                            src="/img/logo/logo-dark-full.png"
                             width={120}
                             height={40}
                             alt="logo"
@@ -87,7 +87,7 @@ const Navigation = ({ toggleMode, mode }) => {
                     )}
                     {mode === MODE_DARK && (
                         <img
-                            src="/img/logo/logo-dark-full.png"
+                            src="/img/logo/logo-light-full.png"
                             width={120}
                             height={40}
                             alt="logo"

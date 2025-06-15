@@ -1,0 +1,163 @@
+{
+    "nav": {
+        "dashboard": {
+            "dashboard": "Панель управления",
+            "ecommerce": "Панель управления",
+            "analytic": "Аналитика",
+            "project": "Проект",
+            "marketing": "Маркетинг"
+        },
+        "concepts": "Концепции",
+        "conceptsAi": {
+            "ai": "ИИ",
+            "chat": "Чат",
+            "image": "Изображение"
+        },
+        "conceptsCustomers": {
+            "customers": "Клиенты",
+            "customerList": "Список",
+            "customerEdit": "Редактировать",
+            "customerCreate": "Создать",
+            "customerDetails": "Детали"
+        },
+        "conceptsProducts": {
+            "scrumBoard": "Скрам-доска",
+            "products": "Продукты",
+            "productList": "Список",
+            "productEdit": "Редактировать",
+            "productCreate": "Создать"
+        },
+        "conceptsProjects": {
+            "projects": "Проекты",
+            "projectList": "Список",
+            "projectDetails": "Детали",
+            "projectTasks": "Задачи",
+            "projectIssue": "Проблема"
+        },
+        "conceptsOrders": {
+            "orders": "Заказы",
+            "orderList": "Список",
+            "orderEdit": "Редактировать",
+            "orderDetails": "Детали",
+            "orderCreate": "Создать"
+        },
+        "conceptsAccount": {
+            "account": "Аккаунт",
+            "settings": "Настройки",
+            "activityLog": "Журнал активности",
+            "pricing": "Цены",
+            "rolesPermissions": "Роли и разрешения"
+        },
+        "conceptsHelpCenter": {
+            "helpCenter": "Центр помощи",
+            "supportHub": "Центр поддержки",
+            "article": "Статья",
+            "editArticle": "Редактировать статью",
+            "manageArticle": "Управление статьями",
+            "faq": "Частые вопросы"
+        },
+        "calendar": "Календарь",
+        "fileManager": "Файловый менеджер",
+        "mail": "Почта",
+        "chat": "Чат",
+        "uiComponents": "UI Компоненты",
+        "uiComponentsCommon": {
+            "common": "Общие",
+            "grid": "Сетка",
+            "button": "Кнопка",
+            "typography": "Типография",
+            "icons": "Иконки"
+        },
+        "uiComponentsFeedback": {
+            "feedback": "Обратная связь",
+            "alert": "Оповещение",
+            "dialog": "Диалог",
+            "drawer": "Выдвижное меню",
+            "progress": "Прогресс",
+            "skeleton": "Скелетон",
+            "spinner": "Загрузка",
+            "toast": "Тост"
+        },
+        "uiComponentsDataDisplay": {
+            "dataDisplay": "Отображение данных",
+            "avatar": "Аватар",
+            "badge": "Бейдж",
+            "calendar": "Календарь",
+            "cards": "Карточки",
+            "table": "Таблица",
+            "tag": "Тег",
+            "timeline": "Хронология",
+            "tooltip": "Подсказка"
+        },
+        "uiComponentsForms": {
+            "forms": "Формы",
+            "checkbox": "Чекбокс",
+            "datePicker": "Выбор даты",
+            "formControl": "Элементы формы",
+            "input": "Поле ввода",
+            "inputGroup": "Группа ввода",
+            "radio": "Радио",
+            "segment": "Сегмент",
+            "select": "Выбор",
+            "slider": "Ползунок",
+            "switcher": "Переключатель",
+            "timeInput": "Ввод времени",
+            "upload": "Загрузка"
+        },
+        "uiComponentsNavigation": {
+            "navigation": "Навигация",
+            "dropdown": "Выпадающее меню",
+            "menu": "Меню",
+            "pagination": "Пагинация",
+            "steps": "Шаги",
+            "tabs": "Вкладки"
+        },
+        "uiComponentsGraph": {
+            "graph": "Графика",
+            "charts": "Графики",
+            "maps": "Карты"
+        },
+        "pages": {
+            "pages": "Страницы",
+            "welcome": "Добро пожаловать",
+            "accessDenied": "Доступ запрещён"
+        },
+        "authentication": {
+            "authentication": "Аутентификация",
+            "signIn": "Вход",
+            "signInSimple": "Простой",
+            "signInSide": "Боковой",
+            "signInSplit": "Разделённый",
+            "signUp": "Регистрация",
+            "signUpSimple": "Простая",
+            "signUpSide": "Боковая",
+            "signUpSplit": "Разделённая",
+            "forgotPassword": "Забыли пароль",
+            "forgotPasswordSimple": "Простая",
+            "forgotPasswordSide": "Боковая",
+            "forgotPasswordSplit": "Разделённая",
+            "resetPassword": "Сброс пароля",
+            "resetPasswordSimple": "Простая",
+            "resetPasswordSide": "Боковая",
+            "resetPasswordSplit": "Разделённая",
+            "otpVerification": "Проверка OTP",
+            "otpVerificationSimple": "Простая",
+            "otpVerificationSide": "Боковая",
+            "otpVerificationSplit": "Разделённая"
+        },
+        "others": {
+            "others": "Другое",
+            "accessDenied": "Доступ запрещён",
+            "accessDeniedDesc": "Страница отказа в доступе",
+            "landing": "Лендинг",
+            "landingDesc": "Главная страница"
+        },
+        "guide": {
+            "guide": "Руководство",
+            "documentation": "Документация",
+            "sharedComponentDoc": "Общие компоненты",
+            "utilsDoc": "Утилиты",
+            "changeLog": "Журнал изменений"
+        }
+    }
+}

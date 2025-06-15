@@ -294,7 +294,7 @@ const Features = ({ mode, onModeChange, schema, setSchema }) => {
                                                         src="/img/landing/layouts/documentation.png"
                                                         width={630}
                                                         height={562}
-                                                        alt="Ecme documentaion"
+                                                        alt="Hambax documentaion"
                                                     />
                                                 )}
                                                 {mode === MODE_DARK && (
@@ -303,7 +303,7 @@ const Features = ({ mode, onModeChange, schema, setSchema }) => {
                                                         src="/img/landing/layouts/documentation-dark.png"
                                                         width={630}
                                                         height={562}
-                                                        alt="Ecme documentaion"
+                                                        alt="Hambax documentaion"
                                                     />
                                                 )}
                                             </div>

@@ -71,7 +71,7 @@ const HeroContent = ({ mode }) => {
                                 src="/img/landing/hero/hero.webp"
                                 width={1920}
                                 height={1040}
-                                alt="Ecme homepage"
+                                alt="Hambax homepage"
                             />
                         )}
                         {mode === MODE_DARK && (
@@ -80,7 +80,7 @@ const HeroContent = ({ mode }) => {
                                 src="/img/landing/hero/hero-dark.webp"
                                 width={1920}
                                 height={1040}
-                                alt="Ecme homepage"
+                                alt="Hambax homepage"
                             />
                         )}
                     </div>

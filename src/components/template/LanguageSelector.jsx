@@ -7,10 +7,9 @@ import { useLocaleStore } from '@/store/localeStore'
 import { HiCheck } from 'react-icons/hi'
 
 const languageList = [
+    { label: 'Deutsch', value: 'de', flag: 'DE' },
     { label: 'English', value: 'en', flag: 'US' },
-    { label: 'Chinese', value: 'zh', flag: 'CN' },
-    { label: 'Espanol', value: 'es', flag: 'ES' },
-    { label: 'Arabic', value: 'ar', flag: 'SA' },
+    { label: 'Русский', value: 'ru', flag: 'RU' },
 ]
 
 const _LanguageSelector = ({ className }) => {
