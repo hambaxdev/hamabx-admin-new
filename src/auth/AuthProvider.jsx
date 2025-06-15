@@ -62,7 +62,7 @@ function AuthProvider({ children }) {
         try {
             const resp = await apiSignIn(values)
             if (resp) {
-                handleSignIn({ accessToken: resp.token }, resp.user)
+                handleSignIn({ accessToken: resp.accessToken }, resp.user)
                 redirect()
                 return {
                     status: 'success',
