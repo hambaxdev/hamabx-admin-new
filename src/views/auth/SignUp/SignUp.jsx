@@ -23,7 +23,7 @@ export const SignUpBase = ({ signInUrl = '/sign-in', disableSubmit }) => {
             <div className="mb-8">
                 <h3 className="mb-1">Sign Up</h3>
                 <p className="font-semibold heading-text">
-                    And lets get started with your free trial
+                    And start managing your events with Hambax
                 </p>
             </div>
             {message && (
