@@ -39,3 +39,11 @@ export async function apiResetPassword(data) {
         data,
     })
 }
+
+export async function apiResendVerificationEmail(data) {
+    return ApiService.fetchDataWithAxios({
+        url: endpointConfig.resendVerificationEmail,
+        method: 'post',
+        data,
+    })
+}

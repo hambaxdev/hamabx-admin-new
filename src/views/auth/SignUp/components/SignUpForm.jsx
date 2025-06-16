@@ -10,7 +10,6 @@ import { z } from 'zod'
 const validationSchema = z
     .object({
         email: z.string({ required_error: 'Please enter your email' }),
-        userName: z.string({ required_error: 'Please enter your name' }),
         password: z.string({ required_error: 'Password Required' }),
         confirmPassword: z.string({
             required_error: 'Confirm Password Required',
@@ -37,11 +36,11 @@ const SignUpForm = (props) => {
     })
 
     const onSignUp = async (values) => {
-        const { userName, password, email } = values
+        const { password, email } = values
 
         if (!disableSubmit) {
             setSubmitting(true)
-            const result = await signUp({ userName, password, email })
+            const result = await signUp({ password, email })
 
             if (result?.status === 'failed') {
                 setMessage?.(result.message)
@@ -54,24 +53,6 @@ const SignUpForm = (props) => {
     return (
         <div className={className}>
             <Form onSubmit={handleSubmit(onSignUp)}>
-                <FormItem
-                    label="User name"
-                    invalid={Boolean(errors.userName)}
-                    errorMessage={errors.userName?.message}
-                >
-                    <Controller
-                        name="userName"
-                        control={control}
-                        render={({ field }) => (
-                            <Input
-                                type="text"
-                                placeholder="User Name"
-                                autoComplete="off"
-                                {...field}
-                            />
-                        )}
-                    />
-                </FormItem>
                 <FormItem
                     label="Email"
                     invalid={Boolean(errors.email)}

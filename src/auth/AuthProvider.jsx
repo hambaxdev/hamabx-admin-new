@@ -5,6 +5,7 @@ import { useSessionUser, useToken } from '@/store/authStore'
 import { apiSignIn, apiSignOut, apiSignUp } from '@/services/AuthService'
 import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router'
+import { useAuthFlowStore } from '@/store/authFlowStore'
 
 const IsolatedNavigator = ({ ref }) => {
     const navigate = useNavigate()
@@ -85,8 +86,17 @@ function AuthProvider({ children }) {
         try {
             const resp = await apiSignUp(values)
             if (resp) {
-                handleSignIn({ accessToken: resp.token }, resp.user)
-                redirect()
+                const {
+                    setJustSignedUp,
+                    setEmailForVerification,
+                    setLastVerificationEmailSentAt,
+                } = useAuthFlowStore.getState()
+
+                setJustSignedUp(true)
+                setEmailForVerification(values.email)
+                setLastVerificationEmailSentAt(Date.now())
+
+                navigatorRef.current?.navigate('/email-verification')
                 return {
                     status: 'success',
                     message: '',

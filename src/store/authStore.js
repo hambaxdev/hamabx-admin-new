@@ -51,6 +51,11 @@ export const useSessionUser = create()(
     ),
 )
 
+export const useAuthFlowStore = create((set) => ({
+    justSignedUp: false,
+    setJustSignedUp: (value) => set({ justSignedUp: value }),
+}))
+
 export const useToken = () => {
     const storage = getPersistStorage()
 
