@@ -36,7 +36,13 @@ const authRoute = [
         path: `/email-verification`,
         component: lazy(() => import('@/views/auth/EmailVerification')),
         authority: [],
-}
+    },
+     {
+        key: 'ResendEmailVerification',
+        path: `/resend-email-verification`,
+        component: lazy(() => import('@/views/auth/ResendEmailVerification')),
+        authority: [],
+    }
 ]
 
 export default authRoute

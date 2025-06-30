@@ -62,6 +62,7 @@ function AuthProvider({ children }) {
     const signIn = async (values) => {
         try {
             const resp = await apiSignIn(values)
+
             if (resp) {
                 handleSignIn({ accessToken: resp.accessToken }, resp.user)
                 redirect()
@@ -70,14 +71,20 @@ function AuthProvider({ children }) {
                     message: '',
                 }
             }
+
             return {
                 status: 'failed',
+                code: 'UNKNOWN_ERROR',
                 message: 'Unable to sign in',
             }
         } catch (errors) {
+            const errData = errors?.response?.data
+
+            console.log(errData?.code);
             return {
                 status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
+                code: errData?.code || 'UNKNOWN_ERROR',
+                message: errData?.message || 'Unexpected error',
             }
         }
     }
@@ -96,7 +103,7 @@ function AuthProvider({ children }) {
                 setEmailForVerification(values.email)
                 setLastVerificationEmailSentAt(Date.now())
 
-                navigatorRef.current?.navigate('/email-verification')
+                navigatorRef.current?.navigate('/otp-verification')
                 return {
                     status: 'success',
                     message: '',
@@ -129,6 +136,59 @@ function AuthProvider({ children }) {
         })
     }
 
+    const onEmailVerified = () => {
+        navigatorRef.current?.navigate('/sign-in')
+    }
+    
+    const navigateToOtpVerification = (email) => {
+        const {
+            setJustSignedUp,
+            setEmailForVerification,
+            setLastVerificationEmailSentAt,
+        } = useAuthFlowStore.getState()
+
+        setJustSignedUp(false)
+        setEmailForVerification(email)
+        setLastVerificationEmailSentAt(Date.now())
+
+        navigatorRef.current?.navigate('/otp-verification')
+    }
+
+
+    const resetPasswordRequest = async (email) => {
+        console.log('resetPasswordRequest called')
+        console.log(email);
+        try {
+            const resp = await apiForgotPassword({ email })
+
+            const { setEmailForReset } = useAuthFlowStore.getState()
+            setEmailForReset(email)
+
+            return { status: 'success', message: '', data: resp }
+        } catch (error) {
+            const errData = error?.response?.data
+            return {
+                status: 'failed',
+                code: errData?.code || 'UNKNOWN_ERROR',
+                message: errData?.message || 'Failed to send reset code',
+            }
+        }
+    }
+
+    const resetPassword = async ({ email, code, newPassword }) => {
+        try {
+            const resp = await apiResetPassword({ email, code, newPassword })
+            return { status: 'success', message: '', data: resp }
+        } catch (error) {
+            const errData = error?.response?.data
+            return {
+                status: 'failed',
+                code: errData?.code || 'UNKNOWN_ERROR',
+                message: errData?.message || 'Failed to reset password',
+            }
+        }
+    }
+
     return (
         <AuthContext.Provider
             value={{
@@ -138,6 +198,10 @@ function AuthProvider({ children }) {
                 signUp,
                 signOut,
                 oAuthSignIn,
+                onEmailVerified,
+                resetPasswordRequest,
+                resetPassword,
+                navigateToOtpVerification
             }}
         >
             {children}

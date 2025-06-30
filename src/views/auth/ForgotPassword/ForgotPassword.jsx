@@ -13,7 +13,9 @@ export const ForgotPasswordBase = ({ signInUrl = '/sign-in' }) => {
     const navigate = useNavigate()
 
     const handleContinue = () => {
-        navigate(signInUrl)
+        if (emailSent) {
+            navigate('/reset-password')
+        }
     }
 
     return (

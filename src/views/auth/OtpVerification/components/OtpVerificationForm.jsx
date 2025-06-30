@@ -2,10 +2,12 @@ import { useState } from 'react'
 import Button from '@/components/ui/Button'
 import { FormItem, Form } from '@/components/ui/Form'
 import OtpInput from '@/components/shared/OtpInput'
-import sleep from '@/utils/sleep'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { apiVerifyOtp } from '@/services/AuthService'
+import { useAuthFlowStore } from '@/store/authFlowStore'
+import { useAuth } from '@/auth'
 
 const OTP_LENGTH = 6
 
@@ -13,11 +15,8 @@ const validationSchema = z.object({
     otp: z.string().min(OTP_LENGTH, { message: 'Please enter a valid OTP' }),
 })
 
-const OtpVerificationForm = (props) => {
+const OtpVerificationForm = ({ className, setMessage, setOtpVerified }) => {
     const [isSubmitting, setSubmitting] = useState(false)
-
-    const { className, setMessage, setOtpVerified } = props
-
     const {
         handleSubmit,
         formState: { errors },
@@ -26,23 +25,31 @@ const OtpVerificationForm = (props) => {
         resolver: zodResolver(validationSchema),
     })
 
+    const email = useAuthFlowStore.getState().emailForVerification
+    const { onEmailVerified } = useAuth()
+
     const onOtpSend = async (values) => {
         const { otp } = values
-        setSubmitting(true)
-        try {
-            /** simulate api call with sleep */
-            await sleep(1000)
-            setSubmitting(false)
-            setOtpVerified?.('OTP verified!')
-        } catch (errors) {
-            setMessage?.(
-                typeof errors === 'string' ? errors : 'Some error occured!',
-            )
-            setSubmitting(false)
+
+        if (!email) {
+            setMessage?.('No email found. Please sign up again.')
+            return
         }
 
-        console.log('otp', otp)
-        setSubmitting(false)
+        setSubmitting(true)
+        try {
+            await apiVerifyOtp({ email, code: otp })
+            setOtpVerified?.('Your email has been successfully verified.')
+            onEmailVerified?.()
+        } catch (error) {
+            const msg =
+                error?.response?.data?.message ||
+                error.message ||
+                'Verification failed.'
+            setMessage?.(msg)
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     return (

@@ -1,22 +1,30 @@
 import Alert from '@/components/ui/Alert'
 import OtpVerificationForm from './components/OtpVerificationForm'
-import sleep from '@/utils/sleep'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
+import { apiResendVerificationEmail } from '@/services/AuthService'
+import { useAuthFlowStore } from '@/store/authFlowStore'
 
 export const OtpVerificationBase = () => {
     const [otpVerified, setOtpVerified] = useTimeOutMessage()
     const [otpResend, setOtpResend] = useTimeOutMessage()
     const [message, setMessage] = useTimeOutMessage()
+    const email = useAuthFlowStore((state) => state.emailForVerification)
 
     const handleResendOtp = async () => {
+        if (!email) {
+            setMessage('No email found. Please sign up again.')
+            return
+        }
+
         try {
-            /** simulate api call with sleep */
-            await sleep(500)
-            setOtpResend('We have sent you One Time Password.')
+            await apiResendVerificationEmail({ email })
+            setOtpResend('We have sent you a new One Time Password.')
         } catch (errors) {
-            setMessage?.(
-                typeof errors === 'string' ? errors : 'Some error occured!',
-            )
+            const msg =
+                errors?.response?.data?.message ||
+                errors.message ||
+                'Failed to resend verification email.'
+            setMessage(msg)
         }
     }
 
@@ -46,9 +54,12 @@ export const OtpVerificationBase = () => {
             <OtpVerificationForm
                 setMessage={setMessage}
                 setOtpVerified={setOtpVerified}
+                onEmailVerified={() => {
+                    window.location.href = '/sign-in'
+                }}
             />
             <div className="mt-4 text-center">
-                <span className="font-semibold">Din&apos;t receive OTP? </span>
+                <span className="font-semibold">Didn't receive OTP? </span>
                 <button
                     className="heading-text font-bold underline"
                     onClick={handleResendOtp}

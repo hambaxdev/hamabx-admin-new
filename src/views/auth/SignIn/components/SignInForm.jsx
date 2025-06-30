@@ -8,6 +8,7 @@ import { useAuth } from '@/auth'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import ActionLink from '@/components/shared/ActionLink'
 
 const validationSchema = z.object({
     email: z
@@ -20,6 +21,8 @@ const validationSchema = z.object({
 
 const SignInForm = (props) => {
     const [isSubmitting, setSubmitting] = useState(false)
+
+    const [errorCode, setErrorCode] = useState(null)
 
     const { disableSubmit = false, className, setMessage, passwordHint } = props
 
@@ -47,6 +50,9 @@ const SignInForm = (props) => {
 
             if (result?.status === 'failed') {
                 setMessage?.(result.message)
+                setErrorCode(result.code || null)
+            } else {
+                setErrorCode(null)
             }
         }
 
@@ -106,6 +112,18 @@ const SignInForm = (props) => {
                 >
                     {isSubmitting ? 'Signing in...' : 'Sign In'}
                 </Button>
+                {errorCode === 'EMAIL_NOT_VERIFIED' && (
+                    <div className="mt-4 text-sm text-center text-red-600">
+                        Email not verified.{' '}
+                        <ActionLink
+                            to="/resend-email-verification"
+                            className="underline text-blue-600 hover:text-blue-800"
+                            themeColor={false}
+                        >
+                            Resend verification email
+                        </ActionLink>
+                    </div>
+                )}
             </Form>
         </div>
     )

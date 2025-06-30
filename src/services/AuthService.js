@@ -47,3 +47,11 @@ export async function apiResendVerificationEmail(data) {
         data,
     })
 }
+
+export async function apiVerifyOtp(data) {
+    return ApiService.fetchDataWithAxios({
+        url: endpointConfig.verifyEmailCode,
+        method: 'post',
+        data,
+    })
+}

@@ -11,12 +11,10 @@ const Split = ({ children, content, ...rest }) => {
                     />
                     <div className="text-center max-w-[550px]">
                         <h1 className="text-neutral">
-                            The easiest way to build your admin app
+                            The easiest way to sell tickets for your events
                         </h1>
                         <p className="text-neutral opacity-80 mx-auto mt-8 font-semibold">
-                            Experience seamless project management with Ecme.
-                            Simplify your workflow, and achieve your goals
-                            efficiently with our powerful and intuitive tools.
+                            Hambax helps organizers launch ticket sales, manage attendees, and monitor event performance — all in one place, without the hassle.
                         </p>
                     </div>
                 </div>
