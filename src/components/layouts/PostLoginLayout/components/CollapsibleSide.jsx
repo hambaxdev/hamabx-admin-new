@@ -10,9 +10,18 @@ import SidePanel from '@/components//template/SidePanel'
 import LayoutBase from '@/components//template/LayoutBase'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { LAYOUT_COLLAPSIBLE_SIDE } from '@/constants/theme.constant'
+import { useSessionUser } from '@/store/authStore'
+import Alert from '@/components/ui/Alert'
+import ActionLink from '@/components/shared/ActionLink'
+import { useLocation } from 'react-router'
 
 const CollapsibleSide = ({ children }) => {
     const { larger, smaller } = useResponsive()
+    const user = useSessionUser((state) => state.user)
+
+    const location = useLocation()
+
+    const isOnCompleteRegistrationPage = location.pathname === '/complete-registration'
 
     return (
         <LayoutBase
@@ -41,6 +50,27 @@ const CollapsibleSide = ({ children }) => {
                         }
                     />
                     <div className="h-full flex flex-auto flex-col">
+                        {console.log('user', user)}
+                        {/* Глобальное предупреждение */}
+                        {!user?.basicRegistrationComplete && !isOnCompleteRegistrationPage && (
+                            <div className="p-4">
+                                <Alert type="warning" showIcon>
+                                    <div className="flex flex-col gap-2">
+                                        <span>
+                                            Your registration is not complete yet. Please finish your registration to continue using all features.
+                                        </span>
+                                        <ActionLink
+                                            to="/complete-registration"
+                                            className="text-sm font-semibold"
+                                            themeColor
+                                        >
+                                            Complete registration now
+                                        </ActionLink>
+                                    </div>
+                                </Alert>
+                            </div>
+                        )}
+                        {/* Контент страницы */}
                         {children}
                     </div>
                 </div>

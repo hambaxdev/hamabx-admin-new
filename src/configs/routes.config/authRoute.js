@@ -37,10 +37,16 @@ const authRoute = [
         component: lazy(() => import('@/views/auth/EmailVerification')),
         authority: [],
     },
-     {
+    {
         key: 'ResendEmailVerification',
         path: `/resend-email-verification`,
         component: lazy(() => import('@/views/auth/ResendEmailVerification')),
+        authority: [],
+    },
+    {
+        key: 'completeRegistration',
+        path: `/complete-registration`,
+        component: lazy(() => import('@/views/auth/CompleteRegistration')),
         authority: [],
     }
 ]

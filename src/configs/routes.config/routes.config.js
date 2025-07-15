@@ -5,6 +5,7 @@ import authRoute from './authRoute'
 import authDemoRoute from './authDemoRoute'
 import guideRoute from './guideRoute'
 import othersRoute from './othersRoute'
+import completeRegistrationRoute from './completeRegistrationRoute'
 
 export const publicRoutes = [...authRoute]
 
@@ -15,4 +16,5 @@ export const protectedRoutes = [
     ...authDemoRoute,
     ...guideRoute,
     ...othersRoute,
+    ...completeRegistrationRoute,
 ]

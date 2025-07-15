@@ -9,7 +9,10 @@ import sleep from '@/utils/sleep'
 import isLastChild from '@/utils/isLastChild'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
+import { apiPostChangePassword } from '@/services/AccontsService'
 import { z } from 'zod'
+import Notification from '@/components/ui/Notification'
+import toast from '@/components/ui/toast'
 
 const authenticatorList = [
     {
@@ -63,17 +66,47 @@ const SettingsSecurity = () => {
         handleSubmit,
         formState: { errors },
         control,
+        reset,
     } = useForm({
         resolver: zodResolver(validationSchema),
     })
 
-    const handlePostSubmit = async () => {
-        setIsSubmitting(true)
-        await sleep(1000)
-        console.log('getValues', getValues())
+const handlePostSubmit = async () => {
+    setIsSubmitting(true)
+    try {
+        const { currentPassword, newPassword } = getValues()
+        const response = await apiPostChangePassword({
+            oldPassword: currentPassword,
+            newPassword,
+        })
+        console.log('Password changed successfully', response)
         setConfirmationOpen(false)
+        toast.push(
+            <Notification type="success" duration={2000}>
+                Password changed successfully
+            </Notification>,
+            { placement: 'top-center' }
+        )
+        reset()
+    } catch (error) {
+        console.error('Failed to change password', error)
+
+        let errorMessage = 'Failed to change password'
+        if (error.response && error.response.data && error.response.data.message) {
+            errorMessage = error.response.data.message
+        }
+
+        toast.push(
+            <Notification type="danger" duration={3000}>
+                {errorMessage}
+            </Notification>,
+            { placement: 'top-center' }
+        )
+    } finally {
         setIsSubmitting(false)
     }
+}
+
 
     const onSubmit = async () => {
         setConfirmationOpen(true)

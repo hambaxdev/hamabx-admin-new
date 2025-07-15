@@ -55,3 +55,10 @@ export async function apiVerifyOtp(data) {
         data,
     })
 }
+
+export async function apiGetCurrentUser() {
+    return ApiService.fetchDataWithAxios({
+        url: endpointConfig.getCurrentUser,
+        method: 'get',
+    })
+}

@@ -16,26 +16,27 @@ import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { HiOutlineUser } from 'react-icons/hi'
 import { TbPlus } from 'react-icons/tb'
+import { apiPostSettingsProfile, apiGetPresignedUrl } from '@/services/AccontsService'
+import Notification from '@/components/ui/Notification'
+import toast from '@/components/ui/toast'
 
 const { Control } = components
+const S3_BASE_URL = 'https://hambax-app-storage.s3.eu-north-1.amazonaws.com/'
 
 const validationSchema = z.object({
-    firstName: z.string().min(1, { message: 'First name required' }),
-    lastName: z.string().min(1, { message: 'Last name required' }),
-    email: z
-        .string()
-        .min(1, { message: 'Email required' })
-        .email({ message: 'Invalid email' }),
-    dialCode: z.string().min(1, { message: 'Please select your country code' }),
-    phoneNumber: z
-        .string()
-        .min(1, { message: 'Please input your mobile number' }),
-    country: z.string().min(1, { message: 'Please select a country' }),
-    address: z.string().min(1, { message: 'Addrress required' }),
-    postcode: z.string().min(1, { message: 'Postcode required' }),
-    city: z.string().min(1, { message: 'City required' }),
-    img: z.string(),
+  firstName: z.string().min(1, { message: 'First name required' }),
+  lastName: z.string().min(1, { message: 'Last name required' }),
+  email: z.string().min(1, { message: 'Email required' }).email({ message: 'Invalid email' }),
+  dialCode: z.string().min(1, { message: 'Please select your country code' }),
+  phoneNumber: z.string().min(1, { message: 'Please input your mobile number' }),
+  country: z.string().min(1, { message: 'Please select a country' }),
+  street: z.string().min(1, { message: 'Street required' }),
+  houseNumber: z.string().min(1, { message: 'House number required' }),
+  zipCode: z.string().min(1, { message: 'Postal code required' }),
+  city: z.string().min(1, { message: 'City required' }),
+  img: z.string().optional(),
 })
+
 
 const CustomSelectOption = (props) => {
     return (
@@ -75,7 +76,7 @@ const CustomControl = ({ children, ...props }) => {
 
 const SettingsProfile = () => {
     const { data, mutate } = useSWR(
-        '/api/settings/profile/',
+        '/auth/profile/',
         () => apiGetSettingsProfile(),
         {
             revalidateOnFocus: false,
@@ -93,20 +94,56 @@ const SettingsProfile = () => {
         })
     }, [])
 
-    const beforeUpload = (files) => {
-        let valid = true
+    const beforeUpload = async (files, field) => {
+        if (!files || files.length === 0) return false;
+        const file = files[0];
+        const allowedFileType = ['image/jpeg', 'image/png'];
 
-        const allowedFileType = ['image/jpeg', 'image/png']
-        if (files) {
-            for (const file of files) {
-                if (!allowedFileType.includes(file.type)) {
-                    valid = 'Please upload a .jpeg or .png file!'
-                }
-            }
+        if (!allowedFileType.includes(file.type)) {
+            toast.push(
+            <Notification type="danger" duration={2000}>
+                Please upload a .jpeg or .png file!
+            </Notification>,
+            { placement: 'top-center' }
+            );
+            return false;
         }
 
-        return valid
-    }
+        try {
+            const { url, key } = await apiGetPresignedUrl({
+            fileName: file.name,
+            contentType: file.type
+            });
+
+            await fetch(url, {
+            method: 'PUT',
+            headers: { 'Content-Type': file.type },
+            body: file,
+            });
+
+            // 🎯 Сохраняем key прямо в react-hook-form state
+            field.onChange(key);
+
+            toast.push(
+            <Notification type="success" duration={2000}>
+                Image uploaded successfully
+            </Notification>,
+            { placement: 'top-center' }
+            );
+
+        } catch (err) {
+            console.error('Upload failed:', err);
+            toast.push(
+            <Notification type="danger" duration={2000}>
+                Upload failed
+            </Notification>,
+            { placement: 'top-center' }
+            );
+        }
+
+        return false;
+    };
+
 
     const {
         handleSubmit,
@@ -119,18 +156,33 @@ const SettingsProfile = () => {
 
     useEffect(() => {
         if (data) {
-            reset(data)
+            reset({
+                ...data,
+                img: data.avatar || ''
+            })
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data])
+    }, [data, reset])
 
-    const onSubmit = async (values) => {
-        await sleep(500)
-        if (data) {
+   const onSubmit = async (values) => {
+        try {
+            await apiPostSettingsProfile(values)
             mutate({ ...data, ...values }, false)
+            toast.push(
+            <Notification type="success" duration={2000}>
+                Profile saved successfully
+            </Notification>,
+            { placement: 'top-center' }
+            )
+        } catch (error) {
+            console.error('Error updating profile:', error)
+            toast.push(
+            <Notification type="danger" duration={2000}>
+                Failed to save profile
+            </Notification>,
+            { placement: 'top-center' }
+            )
         }
     }
-
     return (
         <>
             <h4 className="mb-8">Personal information</h4>
@@ -145,22 +197,13 @@ const SettingsProfile = () => {
                                     size={90}
                                     className="border-4 border-white bg-gray-100 text-gray-300 shadow-lg"
                                     icon={<HiOutlineUser />}
-                                    src={field.value}
+                                    src={field.value ? `${S3_BASE_URL}${field.value}` : undefined}
                                 />
                                 <div className="flex items-center gap-2">
                                     <Upload
                                         showList={false}
                                         uploadLimit={1}
-                                        beforeUpload={beforeUpload}
-                                        onChange={(files) => {
-                                            if (files.length > 0) {
-                                                field.onChange(
-                                                    URL.createObjectURL(
-                                                        files[0],
-                                                    ),
-                                                )
-                                            }
-                                        }}
+                                        beforeUpload={files => beforeUpload(files, field)}
                                     >
                                         <Button
                                             variant="solid"
@@ -286,6 +329,7 @@ const SettingsProfile = () => {
                         }
                         errorMessage={errors.phoneNumber?.message}
                     >
+                        <label className="form-label mb-2">Phone number</label>
                         <Controller
                             name="phoneNumber"
                             control={control}
@@ -334,13 +378,14 @@ const SettingsProfile = () => {
                         )}
                     />
                 </FormItem>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormItem
-                    label="Address"
-                    invalid={Boolean(errors.address)}
-                    errorMessage={errors.address?.message}
+                    label="Street"
+                    invalid={Boolean(errors.street)}
+                    errorMessage={errors.street?.message}
                 >
                     <Controller
-                        name="address"
+                        name="street"
                         control={control}
                         render={({ field }) => (
                             <Input
@@ -352,6 +397,25 @@ const SettingsProfile = () => {
                         )}
                     />
                 </FormItem>
+                <FormItem
+                    label="Hosue number"
+                    invalid={Boolean(errors.houseNumber)}
+                    errorMessage={errors.houseNumber?.message}
+                >
+                    <Controller
+                        name="houseNumber"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                type="text"
+                                autoComplete="off"
+                                placeholder="houseNumber"
+                                {...field}
+                            />
+                        )}
+                    />
+                </FormItem>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormItem
                         label="City"
@@ -373,11 +437,11 @@ const SettingsProfile = () => {
                     </FormItem>
                     <FormItem
                         label="Postal Code"
-                        invalid={Boolean(errors.postcode)}
-                        errorMessage={errors.postcode?.message}
+                        invalid={Boolean(errors.zipCode)}
+                        errorMessage={errors.zipCode?.message}
                     >
                         <Controller
-                            name="postcode"
+                            name="zipCode"
                             control={control}
                             render={({ field }) => (
                                 <Input

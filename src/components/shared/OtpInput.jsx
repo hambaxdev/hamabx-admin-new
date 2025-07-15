@@ -65,11 +65,13 @@ const OTPInput = ({
         const pastedData = e.clipboardData
             .getData('text/plain')
             .slice(0, length)
-        if (pastedData.match(/^[0-9]+$/)) {
+
+        if (pastedData) {
             onChange?.(pastedData.padEnd(length, ''))
+            const nextIndex = Math.min(pastedData.length, length - 1)
+            inputRefs.current[nextIndex]?.focus()
         }
     }
-
     const setRef = (index) => (ref) => {
         inputRefs.current[index] = ref
     }
@@ -87,8 +89,6 @@ const OTPInput = ({
                             inputClass,
                         )}
                         type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
                         maxLength={1}
                         value={value[index] || ''}
                         disabled={disabled}

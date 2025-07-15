@@ -2,7 +2,7 @@ import { useRef, useImperativeHandle, useState } from 'react'
 import AuthContext from './AuthContext'
 import appConfig from '@/configs/app.config'
 import { useSessionUser, useToken } from '@/store/authStore'
-import { apiSignIn, apiSignOut, apiSignUp } from '@/services/AuthService'
+import { apiSignIn, apiSignOut, apiSignUp, apiGetCurrentUser} from '@/services/AuthService'
 import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router'
 import { useAuthFlowStore } from '@/store/authFlowStore'
@@ -48,9 +48,11 @@ function AuthProvider({ children }) {
         setTokenState(tokens.accessToken)
         setSessionSignedIn(true)
 
-        if (user) {
-            setUser(user)
-        }
+        fetchCurrentUser()
+
+        // if (user) {
+        //     setUser(user)
+        // }
     }
 
     const handleSignOut = () => {
@@ -63,8 +65,11 @@ function AuthProvider({ children }) {
         try {
             const resp = await apiSignIn(values)
 
+            console.log('Sign in response:', resp);
             if (resp) {
+
                 handleSignIn({ accessToken: resp.accessToken }, resp.user)
+
                 redirect()
                 return {
                     status: 'success',
@@ -189,6 +194,23 @@ function AuthProvider({ children }) {
         }
     }
 
+    const fetchCurrentUser = async () => {
+        console.log('fetchCurrentUser called');
+        try {
+            const resp = await apiGetCurrentUser()
+            console.log('Current user fetched:', resp);
+            setUser(resp)
+            return { status: 'success', message: '', data: resp }
+        } catch (error) {
+            const errData = error?.response?.data
+            return {
+                status: 'failed',
+                code: errData?.code || 'UNKNOWN_ERROR',
+                message: errData?.message || 'Failed to fetch current user',
+            }
+        }
+    }
+
     return (
         <AuthContext.Provider
             value={{
@@ -201,7 +223,8 @@ function AuthProvider({ children }) {
                 onEmailVerified,
                 resetPasswordRequest,
                 resetPassword,
-                navigateToOtpVerification
+                navigateToOtpVerification,
+                fetchCurrentUser
             }}
         >
             {children}
