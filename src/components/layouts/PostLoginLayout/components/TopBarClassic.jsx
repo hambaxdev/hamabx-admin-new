@@ -34,7 +34,7 @@ const TopBarClassic = ({ children }) => {
                         headerEnd={
                             <>
                                 <Search />
-                                <LanguageSelector />
+                                {/* <LanguageSelector /> */}
                                 <Notification />
                                 <SidePanel />
                                 <UserProfileDropdown hoverable={false} />

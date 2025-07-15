@@ -17,6 +17,7 @@ import { z } from 'zod'
 import { HiOutlineUser } from 'react-icons/hi'
 import { TbPlus } from 'react-icons/tb'
 import { apiPostSettingsProfile, apiGetPresignedUrl } from '@/services/AccontsService'
+import { refreshUserSession } from '@/services/UserSessionService'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 
@@ -121,22 +122,20 @@ const SettingsProfile = () => {
             body: file,
             });
 
-            // 🎯 Сохраняем key прямо в react-hook-form state
             field.onChange(key);
 
             toast.push(
-            <Notification type="success" duration={2000}>
-                Image uploaded successfully
-            </Notification>,
+                <Notification type="success" duration={2000}>
+                    Image uploaded successfully
+                </Notification>,
             { placement: 'top-center' }
             );
 
         } catch (err) {
-            console.error('Upload failed:', err);
             toast.push(
-            <Notification type="danger" duration={2000}>
-                Upload failed
-            </Notification>,
+                <Notification type="danger" duration={2000}>
+                    Upload failed
+                </Notification>,
             { placement: 'top-center' }
             );
         }
@@ -167,18 +166,19 @@ const SettingsProfile = () => {
         try {
             await apiPostSettingsProfile(values)
             mutate({ ...data, ...values }, false)
+            await refreshUserSession()
             toast.push(
-            <Notification type="success" duration={2000}>
-                Profile saved successfully
-            </Notification>,
+                <Notification type="success" duration={2000}>
+                    Profile saved successfully
+                </Notification>,
             { placement: 'top-center' }
             )
         } catch (error) {
             console.error('Error updating profile:', error)
             toast.push(
-            <Notification type="danger" duration={2000}>
-                Failed to save profile
-            </Notification>,
+                <Notification type="danger" duration={2000}>
+                    Failed to save profile
+                </Notification>,
             { placement: 'top-center' }
             )
         }

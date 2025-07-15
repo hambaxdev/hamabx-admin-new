@@ -12,6 +12,7 @@ export async function refreshUserSession() {
             isOnCompleteRegistrationPage: false,
         })
 
+        console.log('User session refreshed successfully:', updatedUser);
         return updatedUser
     } catch (err) {
         console.error('Failed to refresh user session:', err)

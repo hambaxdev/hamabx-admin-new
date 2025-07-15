@@ -13,24 +13,17 @@ import { useAuth } from '@/auth'
 
 const dropdownItemList = [
     {
-        label: 'Profile',
-        path: '/concepts/account/settings',
-        icon: <PiUserDuotone />,
-    },
-    {
         label: 'Account Setting',
         path: '/concepts/account/settings',
         icon: <PiGearDuotone />,
-    },
-    {
-        label: 'Activity Log',
-        path: '/concepts/account/activity-log',
-        icon: <PiPulseDuotone />,
-    },
+    }
 ]
 
 const _UserDropdown = () => {
-    const { avatar, userName, email } = useSessionUser((state) => state.user)
+    const { avatar, firstName, lastName, email } = useSessionUser((state) => state.user)
+    const AVATAR_BASE_URL = 'https://hambax-app-storage.s3.eu-north-1.amazonaws.com/'
+
+    const avatarUrl = avatar ? `${AVATAR_BASE_URL}${avatar}` : null
 
     const { signOut } = useAuth()
 
@@ -39,7 +32,7 @@ const _UserDropdown = () => {
     }
 
     const avatarProps = {
-        ...(avatar ? { src: avatar } : { icon: <PiUserDuotone /> }),
+        ...(avatarUrl ? { src: avatarUrl } : { icon: <PiUserDuotone /> }),
     }
 
     return (
@@ -58,7 +51,7 @@ const _UserDropdown = () => {
                     <Avatar {...avatarProps} />
                     <div>
                         <div className="font-bold text-gray-900 dark:text-gray-100">
-                            {userName || 'Anonymous'}
+                            {firstName || 'Anonymous'} {lastName || ''}
                         </div>
                         <div className="text-xs">
                             {email || 'No email available'}
