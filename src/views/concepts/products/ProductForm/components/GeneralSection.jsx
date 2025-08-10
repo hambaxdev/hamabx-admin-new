@@ -10,7 +10,7 @@ const GeneralSection = ({ control, errors }) => {
             <h4 className="mb-6">Basic Information</h4>
             <div>
                 <FormItem
-                    label="Product name"
+                    label="Event name"
                     invalid={Boolean(errors.name)}
                     errorMessage={errors.name?.message}
                 >
@@ -21,25 +21,7 @@ const GeneralSection = ({ control, errors }) => {
                             <Input
                                 type="text"
                                 autoComplete="off"
-                                placeholder="Product Name"
-                                {...field}
-                            />
-                        )}
-                    />
-                </FormItem>
-                <FormItem
-                    label="Product code"
-                    invalid={Boolean(errors.productCode)}
-                    errorMessage={errors.productCode?.message}
-                >
-                    <Controller
-                        name="productCode"
-                        control={control}
-                        render={({ field }) => (
-                            <Input
-                                type="text"
-                                autoComplete="off"
-                                placeholder="Product Code"
+                                placeholder="Event Name"
                                 {...field}
                             />
                         )}
@@ -65,6 +47,46 @@ const GeneralSection = ({ control, errors }) => {
                     )}
                 />
             </FormItem>
+            <div className="flex gap-4">
+                <FormItem
+                    label="Event start date"
+                    invalid={Boolean(errors.startDate)}
+                    errorMessage={errors.startDate?.message}
+                    className="flex-1"
+                >
+                    <Controller
+                        name="startDate"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                type="date"
+                                autoComplete="off"
+                                placeholder="Event Start Date"
+                                {...field}
+                            />
+                        )}
+                    />
+                </FormItem>
+                <FormItem
+                    label="Event start time"
+                    invalid={Boolean(errors.startTime)}
+                    errorMessage={errors.startTime?.message}
+                    className="flex-1"
+                >
+                    <Controller
+                        name="startTime"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                type="time"
+                                autoComplete="off"
+                                placeholder="Event Start Time"
+                                {...field}
+                            />
+                        )}
+                    />
+                </FormItem>
+            </div>
         </Card>
     )
 }

@@ -10,22 +10,13 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import isEmpty from 'lodash/isEmpty'
+import AddressSection from './components/CustomAddressSection'
 
 const validationSchema = z.object({
-    name: z.string().min(1, { message: 'Product name required!' }),
-    productCode: z.string().min(1, { message: 'Produc code required!' }),
+    name: z.string().min(1, { message: 'Event name required!' }),
     description: z.string().min(1, { message: 'Produc description required!' }),
     price: z.union([z.string(), z.number()], {
         errorMap: () => ({ message: 'Price required!' }),
-    }),
-    taxRate: z.union([z.string(), z.number()], {
-        errorMap: () => ({ message: 'Tax rate required!' }),
-    }),
-    costPerItem: z.union([z.string(), z.number()], {
-        errorMap: () => ({ message: 'Cost required!' }),
-    }),
-    bulkDiscountPrice: z.union([z.string(), z.number()], {
-        errorMap: () => ({ message: 'Bulk discount price required!' }),
     }),
     imgList: z
         .array(
@@ -36,7 +27,6 @@ const validationSchema = z.object({
             }),
         )
         .min(1, { message: 'At least 1 image required!' }),
-    category: z.string().min(1, { message: 'Product category required!' }),
 })
 
 const ProductForm = (props) => {
@@ -53,6 +43,8 @@ const ProductForm = (props) => {
         reset,
         formState: { errors },
         control,
+        watch,
+        setValue
     } = useForm({
         defaultValues: {
             ...defaultValues,
@@ -68,6 +60,7 @@ const ProductForm = (props) => {
     }, [JSON.stringify(defaultValues)])
 
     const onSubmit = (values) => {
+        console.log('Form submitted with values:', values)
         onFormSubmit?.(values)
     }
 
@@ -81,7 +74,8 @@ const ProductForm = (props) => {
                 <div className="flex flex-col xl:flex-row gap-4">
                     <div className="gap-4 flex flex-col flex-auto">
                         <GeneralSection control={control} errors={errors} />
-                        <PricingSection control={control} errors={errors} />
+                        <AddressSection control={control} errors={errors} />
+                        <PricingSection control={control} errors={errors} watch={watch} setValue={setValue} />
                     </div>
                     <div className="lg:min-w-[440px] 2xl:w-[500px] gap-4 flex flex-col">
                         <ImageSection control={control} errors={errors} />

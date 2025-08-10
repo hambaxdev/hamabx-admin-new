@@ -8,6 +8,7 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import sleep from '@/utils/sleep'
 import { TbTrash } from 'react-icons/tb'
 import { useNavigate } from 'react-router'
+import { apiPostProduct } from '@/services/ProductService'
 
 const ProductCreate = () => {
     const navigate = useNavigate()
@@ -17,21 +18,61 @@ const ProductCreate = () => {
     const [isSubmiting, setIsSubmiting] = useState(false)
 
     const handleFormSubmit = async (values) => {
-        console.log('Submitted values', values)
-        setIsSubmiting(true)
-        await sleep(800)
-        setIsSubmiting(false)
-        toast.push(
-            <Notification type="success">Product created!</Notification>,
-            { placement: 'top-center' },
-        )
-        navigate('/concepts/products/product-list')
+        console.log('Submitting form with values:', values)
+        try {
+            // Преобразуем imgList в imageUrls
+            const imageUrls = values.imgList.map((img) => img.img)
+
+            // Преобразуем язык, тип, возврат, если выбраны через Select
+            const dto = {
+                name: values.name,
+                description: values.description,
+                startDate: values.startDate,
+                startTime: values.startTime,
+                imageUrls: [
+                    'https://hambax.com/uploads/placeholder-1.jpg',
+                    'https://hambax.com/uploads/placeholder-2.jpg'
+                ],
+                locationName: values.location,
+                country: values.country,
+                address: values.address,
+                city: values.city,
+                postalCode: values.postcode,
+                ageRestriction: values.ageRestriction || 'NO_RESTRICTION',
+                eventType: values.eventTypes?.value?.toUpperCase() || 'CONCERT',
+                language: values.languages?.[0]?.value?.toUpperCase?.() || 'EN',
+                refundPolicy: values.refundPolicy?.value?.toUpperCase?.() || 'NO_REFUND',
+                priceType: values.ticketPools?.length ? 'TICKET_POOL' : 'FIXED',
+                amount: !values.ticketPools?.length ? parseFloat(values.price) : null,
+                currency: 'EUR',
+                organizerId: '00000000-0000-0000-0000-000000000000'
+            }
+
+            console.log('DTO отправляется на API:', dto)
+
+            await apiPostProduct(dto)
+
+            toast.push(
+                <Notification type="success">Event created!</Notification>,
+                { placement: 'top-center' }
+            )
+            navigate('/concepts/products/product-list')
+        } catch (error) {
+            console.error('Ошибка при создании:', error)
+            toast.push(
+                <Notification type="danger">
+                    Failed to create event. Please try again.
+                </Notification>,
+                { placement: 'top-center' }
+            )
+        }
     }
+
 
     const handleConfirmDiscard = () => {
         setDiscardConfirmationOpen(true)
         toast.push(
-            <Notification type="success">Product discardd!</Notification>,
+            <Notification type="success">Event discardd!</Notification>,
             { placement: 'top-center' },
         )
         navigate('/concepts/products/product-list')
@@ -50,18 +91,25 @@ const ProductCreate = () => {
             <ProductForm
                 newProduct
                 defaultValues={{
-                    name: '',
-                    description: '',
-                    productCode: '',
-                    taxRate: 0,
-                    price: '',
-                    bulkDiscountPrice: '',
-                    costPerItem: '',
-                    imgList: [],
-                    category: '',
-                    tags: [],
-                    brand: '',
-                }}
+                name: '',
+                description: '',
+                productCode: '',
+                taxRate: 0,
+                price: '',
+                bulkDiscountPrice: '',
+                costPerItem: '',
+                imgList: [],
+                category: '',
+                tags: [],
+                brand: '',
+                startDate: '',
+                startTime: '',
+                location: '',
+                country: '',
+                address: '',
+                city: '',
+                postcode: '',
+            }}
                 onFormSubmit={handleFormSubmit}
             >
                 <Container>

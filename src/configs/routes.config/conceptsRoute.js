@@ -105,9 +105,9 @@ const conceptsRoute = [
         authority: [ADMIN, USER],
         meta: {
             header: {
-                title: 'Create product',
+                title: 'Create Event',
                 description:
-                    'Quickly add products to your inventory. Enter key details, manage stock, and set availability.',
+                    'Quickly add events to your inventory. Enter key details, manage stock, and set availability.',
                 contained: true,
             },
             footer: false,

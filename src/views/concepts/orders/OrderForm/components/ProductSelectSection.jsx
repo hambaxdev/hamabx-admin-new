@@ -221,7 +221,7 @@ const ProductSelectSection = () => {
             >
                 <div className="text-center mb-6">
                     <h4 className="mb-1">All products</h4>
-                    <p>Add products to this order.</p>
+                    <p>Add events to this order.</p>
                 </div>
                 <div className="mt-4">
                     <div className="mb-6">

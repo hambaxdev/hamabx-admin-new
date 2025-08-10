@@ -60,7 +60,7 @@ const ProductListSelected = () => {
                                         <span className="font-semibold flex items-center gap-1">
                                             <span className="heading-text">
                                                 {selectedProduct.length}{' '}
-                                                Products
+                                                Events
                                             </span>
                                             <span>selected</span>
                                         </span>
@@ -88,7 +88,7 @@ const ProductListSelected = () => {
             <ConfirmDialog
                 isOpen={deleteConfirmationOpen}
                 type="danger"
-                title="Remove products"
+                title="Remove events"
                 onClose={handleCancel}
                 onRequestClose={handleCancel}
                 onCancel={handleCancel}
@@ -96,7 +96,7 @@ const ProductListSelected = () => {
             >
                 <p>
                     {' '}
-                    Are you sure you want to remove these products? This action
+                    Are you sure you want to remove these events? This action
                     can&apos;t be undo.{' '}
                 </p>
             </ConfirmDialog>

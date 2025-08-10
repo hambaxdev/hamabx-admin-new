@@ -132,7 +132,7 @@ const OrderListTableFilter = () => {
                                 )}
                             />
                         </FormItem>
-                        <FormItem label="Product type">
+                        <FormItem label="Event type">
                             <div className="mt-4">
                                 <Controller
                                     name="paymentMethod"

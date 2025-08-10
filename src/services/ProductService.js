@@ -15,3 +15,11 @@ export async function apiGetProduct({ id, ...params }) {
         params,
     })
 }
+
+export async function apiPostProduct({ id, ...params }) {
+    return ApiService.fetchDataWithAxios({
+        url: `/event/api/v1/events`,
+        method: 'post',
+        data: params,
+    })
+}

@@ -103,7 +103,7 @@ const ImageSection = ({ control, errors }) => {
         let valid = true
 
         const allowedFileType = ['image/jpeg', 'image/png']
-        const maxFileSize = 500000
+        const maxFileSize = 50000000 // 50mb
 
         if (file) {
             for (const f of file) {
@@ -152,9 +152,9 @@ const ImageSection = ({ control, errors }) => {
 
     return (
         <Card>
-            <h4 className="mb-2">Product Image</h4>
+            <h4 className="mb-2">Event Image</h4>
             <p>
-                Choose a product photo or simply drag and drop up to 5 photos
+                Choose a Event photo or simply drag and drop up to 5 photos
                 here.
             </p>
             <div className="mt-4">
