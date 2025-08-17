@@ -13,20 +13,39 @@ import isEmpty from 'lodash/isEmpty'
 import AddressSection from './components/CustomAddressSection'
 
 const validationSchema = z.object({
-    name: z.string().min(1, { message: 'Event name required!' }),
-    description: z.string().min(1, { message: 'Produc description required!' }),
-    price: z.union([z.string(), z.number()], {
-        errorMap: () => ({ message: 'Price required!' }),
-    }),
-    imgList: z
-        .array(
-            z.object({
-                id: z.string(),
-                name: z.string(),
-                img: z.string(),
-            }),
-        )
-        .min(1, { message: 'At least 1 image required!' }),
+  name: z.string().min(1, { message: 'Event name required!' }),
+  description: z.string().min(1, { message: 'Produc description required!' }),
+  price: z.union([z.string(), z.number()], {
+    errorMap: () => ({ message: 'Price required!' }),
+  }),
+  imgList: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    img: z.string(),
+  })).min(1, { message: 'At least 1 image required!' }),
+
+  // --- ниже новые поля ---
+  startDate: z.string().optional(),
+  startTime: z.string().optional(),
+  location: z.string().optional(),
+  country: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  postcode: z.string().optional(),
+
+  ageRestriction: z.string().optional(),
+  eventTypes: z.string().optional(), // (или переименуй на eventType)
+  languages: z.array(z.string()).optional(),
+  refundPolicy: z.string().optional(),
+
+  ticketPools: z.array(z.object({
+    name: z.string().optional(),
+    price: z.union([z.string(), z.number()]).optional(),
+    startDate: z.any().optional(),
+    endDate: z.any().optional(),
+    limitTickets: z.boolean().optional(),
+    quantity: z.union([z.string(), z.number()]).optional(),
+  })).optional(),
 })
 
 const ProductForm = (props) => {
