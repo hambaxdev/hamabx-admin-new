@@ -1,85 +1,89 @@
 import Card from '@/components/ui/Card'
-import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Tooltip from '@/components/ui/Tooltip'
 import { FormItem } from '@/components/ui/Form'
 import { HiOutlineQuestionMarkCircle } from 'react-icons/hi'
 import { Controller } from 'react-hook-form'
 import CreatableSelect from 'react-select/creatable'
+import { useProductFormOptions } from '@/utils/hooks/useProductFormOptions'
 
-
-const ageRestrictions = [
-    { label: 'No restriction', value: 'NO_RESTRICTION' },
-    { label: '16+', value: 'AGE_16_PLUS' },
-    { label: '18+', value: 'AGE_18_PLUS' },
-]
-
-const languages = [
+// временно статично, пока не будет ендпоинта
+const languageOptions = [
     { label: 'English', value: 'en' },
     { label: 'German', value: 'de' },
     { label: 'Russian', value: 'ru' },
 ]
 
-const eventTypes = [
-    { label: 'Concert', value: 'concert' },
-    { label: 'Conference', value: 'conference' },
-    { label: 'Festival', value: 'festival' },
-    { label: 'Party', value: 'party' },
-    { label: 'Theater', value: 'theater' },
-]
-
-const refundPolicies = [
-    { label: 'No Refund', value: 'no_refund' },
-    { label: 'Full Refund', value: 'full_refund' },
-    { label: 'Partial Refund', value: 'partial_refund' },
-    { label: 'Exchange Only', value: 'exchange_only' },
-]
-
 const AttributeSection = ({ control, errors }) => {
+    const { options, isLoading, isError } = useProductFormOptions()
+
+    // можно воткнуть скелетон/плейсхолдер
+    const isDisabled = isLoading || isError
+
     return (
         <Card>
             <h4 className="mb-6">Attribute</h4>
+
             <FormItem
                 label="Age Restriction"
                 invalid={Boolean(errors.ageRestriction)}
                 errorMessage={errors.ageRestriction?.message}
             >
                 <Controller
-                    name="ageRestriction"
+                    name="ageRestriction" 
                     control={control}
                     render={({ field }) => (
                         <Select
-                            options={ageRestrictions}
-                            value={ageRestrictions.filter(
-                                (category) => category.value === field.value,
-                            )}
-                            onChange={(option) => field.onChange(option?.value)}
+                            isDisabled={isDisabled}
+                            options={options.ageRestrictions}
+                            // Select ожидает объект, поэтому находим его по коду
+                            value={options.ageRestrictions.find(o => o.value === field.value) || null}
+                            onChange={(opt) => field.onChange(opt?.value ?? null)}
                         />
                     )}
                 />
             </FormItem>
-            <FormItem
-                label="Event Type"
-            >
+
+            <FormItem label="Event Type">
                 <Controller
-                    name="eventTypes"
+                    name="eventTypes" // массив кодов или один код — определись в схеме формы
                     control={control}
-                    render={({ field }) => (
-                        <Select
-                            value={field.value}
-                            placeholder="Add event type..."
-                            componentAs={CreatableSelect}
-                            options={eventTypes}
-                            onChange={(option) => field.onChange(option)}
-                        />
-                    )}
+                    render={({ field }) => {
+                        const isMulti = false // сменишь на true, если надо несколько типов
+                        const resolveValue = () => {
+                            if (isMulti) {
+                                return options.eventTypes.filter(o => (field.value || []).includes(o.value))
+                            }
+                            return options.eventTypes.find(o => o.value === field.value) || null
+                        }
+                        const handleChange = (opt) => {
+                            if (isMulti) {
+                                field.onChange((opt || []).map(o => o.value))
+                            } else {
+                                field.onChange(opt?.value ?? null)
+                            }
+                        }
+
+                        return (
+                            <Select
+                                isDisabled={isDisabled}
+                                isMulti={isMulti}
+                                value={resolveValue()}
+                                placeholder="Add event type..."
+                                componentAs={CreatableSelect}
+                                options={options.eventTypes}
+                                onChange={handleChange}
+                            />
+                        )
+                    }}
                 />
             </FormItem>
+
             <FormItem
                 label="Languages"
                 extra={
                     <Tooltip
-                        title="You add as many languages as you want to a event. This will help users to find events in their preferred language."
+                        title="You can add as many languages as you want. It helps discoverability."
                         className="text-center"
                     >
                         <HiOutlineQuestionMarkCircle className="text-base mx-1" />
@@ -87,34 +91,34 @@ const AttributeSection = ({ control, errors }) => {
                 }
             >
                 <Controller
-                    name="languages"
+                    name="languages" // массив, напр. ['en','de']
                     control={control}
                     render={({ field }) => (
                         <Select
                             isMulti
                             isClearable
-                            value={field.value}
+                            value={languageOptions.filter(o => (field.value || []).includes(o.value))}
                             placeholder="Add languages for event..."
                             componentAs={CreatableSelect}
-                            options={languages}
-                            onChange={(option) => field.onChange(option)}
+                            options={languageOptions}
+                            onChange={(opts) => field.onChange((opts || []).map(o => o.value))}
                         />
                     )}
                 />
             </FormItem>
-            <FormItem
-                label="Refund Policy"
-            >
+
+            <FormItem label="Refund Policy">
                 <Controller
-                    name="refundPolicy"
+                    name="refundPolicy" // string code, напр. "FULL_REFUND"
                     control={control}
                     render={({ field }) => (
                         <Select
-                            value={field.value}
+                            isDisabled={isDisabled}
+                            value={options.refundPolicies.find(o => o.value === field.value) || null}
                             placeholder="Add Refund Policy..."
                             componentAs={CreatableSelect}
-                            options={refundPolicies}
-                            onChange={(option) => field.onChange(option)}
+                            options={options.refundPolicies}
+                            onChange={(opt) => field.onChange(opt?.value ?? null)}
                         />
                     )}
                 />

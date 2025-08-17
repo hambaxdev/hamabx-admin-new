@@ -46,7 +46,6 @@ const CollapsibleSide = ({ children }) => {
                         }
                     />
                     <div className="h-full flex flex-auto flex-col">
-                        {console.log('user', user)}
                         {/* Глобальное предупреждение */}
                         {!user?.basicRegistrationComplete && !isOnCompleteRegistrationPage && (
                             <div className="p-4">

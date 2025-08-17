@@ -1,16 +1,36 @@
 import { useMemo, useState } from 'react'
 import Avatar from '@/components/ui/Avatar'
-import Progress from '@/components/ui/Progress'
 import Tooltip from '@/components/ui/Tooltip'
 import DataTable from '@/components/shared/DataTable'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import useProductList from '../hooks/useProductList'
-import classNames from '@/utils/classNames'
 import cloneDeep from 'lodash/cloneDeep'
 import { useNavigate } from 'react-router'
 import { TbPencil, TbTrash } from 'react-icons/tb'
 import { FiPackage } from 'react-icons/fi'
 import { NumericFormat } from 'react-number-format'
+
+// Helper to format dates as dd.mm.YYYY
+const formatDateRu = (value) => {
+    if (!value) return '—'
+    try {
+        if (typeof value === 'string') {
+            const m = value.match(/^(\d{4})-(\d{2})-(\d{2})/)
+            if (m) {
+                const [, yyyy, mm, dd] = m
+                return `${dd}.${mm}.${yyyy}`
+            }
+        }
+        const d = new Date(value)
+        if (Number.isNaN(d.getTime())) return String(value)
+        const dd = String(d.getDate()).padStart(2, '0')
+        const mm = String(d.getMonth() + 1).padStart(2, '0')
+        const yyyy = String(d.getFullYear())
+        return `${dd}.${mm}.${yyyy}`
+    } catch {
+        return String(value)
+    }
+}
 
 const ProductColumn = ({ row }) => {
     return (
@@ -22,7 +42,7 @@ const ProductColumn = ({ row }) => {
             />
             <div>
                 <div className="font-bold heading-text mb-1">{row.name}</div>
-                <span>ID: {row.productCode}</span>
+                <span>ID: {row.id}</span>
             </div>
         </div>
     )
@@ -54,6 +74,7 @@ const ActionColumn = ({ onEdit, onDelete }) => {
 }
 
 const ProductListTable = () => {
+
     const navigate = useNavigate()
 
     const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
@@ -72,21 +93,21 @@ const ProductListTable = () => {
         navigate(`/concepts/products/product-edit/${product.id}`)
     }
 
-    const handleConfirmDelete = () => {
-        const newProductList = productList.filter((product) => {
-            return !(toDeleteId === product.id)
-        })
-        setSelectAllProduct([])
-        mutate(
-            {
-                list: newProductList,
-                total: productListTotal - selectedProduct.length,
-            },
-            false,
-        )
-        setDeleteConfirmationOpen(false)
-        setToDeleteId('')
-    }
+const handleConfirmDelete = () => {
+  const newProductList = productList.filter((product) => product.id !== toDeleteId)
+
+  setSelectAllProduct([])
+  mutate(
+    (prev) => {
+      // если prev ещё не загружен
+      if (!prev) return { data: newProductList, total: newProductList.length }
+      return { ...prev, data: newProductList, total: newProductList.length }
+    },
+    false // не рефетчить
+  )
+  setDeleteConfirmationOpen(false)
+  setToDeleteId('')
+}
 
     const {
         productList,
@@ -101,89 +122,89 @@ const ProductListTable = () => {
     } = useProductList()
 
     const columns = useMemo(
-        () => [
-            {
-                header: 'Product',
-                accessorKey: 'name',
-                cell: (props) => {
-                    const row = props.row.original
-                    return <ProductColumn row={row} />
-                },
-            },
-            {
-                header: 'Price',
-                accessorKey: 'price',
-                cell: (props) => {
-                    const { price } = props.row.original
-                    return (
-                        <span className="font-bold heading-text">
-                            <NumericFormat
-                                fixedDecimalScale
-                                prefix="$"
-                                displayType="text"
-                                value={price}
-                                decimalScale={2}
-                                thousandSeparator={true}
-                            />
-                        </span>
-                    )
-                },
-            },
-            {
-                header: 'Quantity',
-                accessorKey: 'stock',
-                cell: (props) => {
-                    const row = props.row.original
-                    return (
-                        <span className="font-bold heading-text">
-                            {row.stock}
-                        </span>
-                    )
-                },
-            },
-            {
-                header: 'Sales',
-                accessorKey: 'status',
-                cell: (props) => {
-                    const { salesPercentage, sales } = props.row.original
-                    return (
-                        <div className="flex flex-col gap-1">
-                            <span className="flex gap-1">
-                                <span className="font-semibold">
-                                    <NumericFormat
-                                        displayType="text"
-                                        value={sales}
-                                        thousandSeparator={true}
-                                    />
-                                </span>
-                                <span>Sales</span>
-                            </span>
-                            <Progress
-                                percent={salesPercentage}
-                                showInfo={false}
-                                customColorClass={classNames(
-                                    'bg-error',
-                                    salesPercentage > 40 && 'bg-warning',
-                                    salesPercentage > 70 && 'bg-success',
-                                )}
-                            />
-                        </div>
-                    )
-                },
-            },
-            {
-                header: '',
-                id: 'action',
-                cell: (props) => (
-                    <ActionColumn
-                        onEdit={() => handleEdit(props.row.original)}
-                        onDelete={() => handleDelete(props.row.original)}
-                    />
-                ),
-            },
-        ], // eslint-disable-next-line react-hooks/exhaustive-deps
-        [],
-    )
+  () => [
+    {
+      header: 'Event',
+      accessorKey: 'name',
+      cell: (props) => <ProductColumn row={props.row.original} />,
+    },
+    {
+      header: 'When',
+      id: 'when',
+      cell: (props) => {
+        const { startDate, startTime } = props.row.original
+        const formattedDate = formatDateRu(startDate)
+        return (
+          <div className="leading-tight">
+            <div className="font-semibold">{formattedDate}</div>
+            <div className="text-xs opacity-70">{startTime || ''}</div>
+          </div>
+        )
+      },
+    },
+    {
+      header: 'Location',
+      id: 'location',
+      cell: (props) => {
+        const { locationName, city, country } = props.row.original
+        return (
+          <div className="leading-tight">
+            <div className="font-semibold">{locationName || city || '—'}</div>
+            <div className="text-xs opacity-70">
+              {[city, country].filter(Boolean).join(', ')}
+            </div>
+          </div>
+        )
+      },
+    },
+    {
+      header: 'Price',
+      accessorKey: 'price',
+      cell: (props) => {
+        const { price, currency } = props.row.original
+        if (price == null) return <span className="opacity-60">—</span>
+        const prefix = currency === 'EUR' ? '€' : ''
+        return (
+          <span className="font-bold heading-text">
+            <NumericFormat
+              fixedDecimalScale
+              prefix={prefix}
+              displayType="text"
+              value={price}
+              decimalScale={2}
+              thousandSeparator
+            />
+          </span>
+        )
+      },
+    },
+    {
+      header: 'Type',
+      id: 'eventType',
+      cell: (props) => {
+        const { eventType, ageRestriction } = props.row.original
+        return (
+          <div className="leading-tight">
+            <div className="font-semibold">{eventType || '—'}</div>
+            <div className="text-xs opacity-70">{ageRestriction || ''}</div>
+          </div>
+        )
+      },
+    },
+    {
+      header: '',
+      id: 'action',
+      cell: (props) => (
+        <ActionColumn
+          onEdit={() => handleEdit(props.row.original)}
+          onDelete={() => handleDelete(props.row.original)}
+        />
+      ),
+    },
+  ],
+  [] // eslint-disable-line
+)
+
 
     const handleSetTableData = (data) => {
         setTableData(data)

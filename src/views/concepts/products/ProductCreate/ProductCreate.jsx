@@ -19,33 +19,65 @@ const ProductCreate = () => {
 
     const handleFormSubmit = async (values) => {
         console.log('Submitting form with values:', values)
+        setIsSubmiting(true)
         try {
-            // Преобразуем imgList в imageUrls
-            const imageUrls = values.imgList.map((img) => img.img)
+            // Картинки из формы -> массив URL-строк
+            const imageUrls = (values.imgList || [])
+                .map(x => x?.img)
+                .filter(Boolean)
 
-            // Преобразуем язык, тип, возврат, если выбраны через Select
+            // Есть ли пулы билетов
+            const hasPools = Array.isArray(values.ticketPools) && values.ticketPools.length > 0
+
+            // Если нет пулов — берём фикс-прайс
+            const amount = !hasPools
+                ? (Number.isFinite(Number(values.price)) ? Number(values.price) : null)
+                : null
+
+            // Первый язык из массива кодов, по умолчанию EN
+            const language = (values.languages?.[0] || 'en').toUpperCase()
+
+            // Маппинг пулов в DTO (если есть)
+            const ticketPools = hasPools
+                ? values.ticketPools.map(p => ({
+                    name: p?.name ?? '',
+                    price: Number.isFinite(Number(p?.price)) ? Number(p.price) : 0,
+                    startDate: p?.startDate ?? null,
+                    endDate: p?.endDate ?? null,
+                    limitTickets: Boolean(p?.limitTickets),
+                    quantity: p?.limitTickets
+                        ? (Number.isFinite(Number(p?.quantity)) ? Number(p.quantity) : 0)
+                        : null,
+                }))
+                : undefined
+
             const dto = {
                 name: values.name,
                 description: values.description,
                 startDate: values.startDate,
                 startTime: values.startTime,
-                imageUrls: [
-                    'https://hambax.com/uploads/placeholder-1.jpg',
-                    'https://hambax.com/uploads/placeholder-2.jpg'
-                ],
+                imageUrls, // используем реальные, без плейсхолдеров
                 locationName: values.location,
                 country: values.country,
                 address: values.address,
                 city: values.city,
                 postalCode: values.postcode,
+
+                // Коды из формы
                 ageRestriction: values.ageRestriction || 'NO_RESTRICTION',
-                eventType: values.eventTypes?.value?.toUpperCase() || 'CONCERT',
-                language: values.languages?.[0]?.value?.toUpperCase?.() || 'EN',
-                refundPolicy: values.refundPolicy?.value?.toUpperCase?.() || 'NO_REFUND',
-                priceType: values.ticketPools?.length ? 'TICKET_POOL' : 'FIXED',
-                amount: !values.ticketPools?.length ? parseFloat(values.price) : null,
+                eventType: (values.eventType || values.eventTypes || 'CONCERT'), // поддержка старого имени
+                language,
+                refundPolicy: values.refundPolicy || 'NO_REFUND',
+
+                // Цена/тип
+                priceType: hasPools ? 'TICKET_POOL' : 'FIXED',
+                amount,
                 currency: 'EUR',
-                organizerId: '00000000-0000-0000-0000-000000000000'
+
+                organizerId: '00000000-0000-0000-0000-000000000000',
+
+                // Добавляем поле только если есть пулы
+                ...(hasPools ? { ticketPools } : {}),
             }
 
             console.log('DTO отправляется на API:', dto)
@@ -65,8 +97,11 @@ const ProductCreate = () => {
                 </Notification>,
                 { placement: 'top-center' }
             )
+        } finally {
+            setIsSubmiting(false)
         }
     }
+
 
 
     const handleConfirmDiscard = () => {
@@ -91,27 +126,34 @@ const ProductCreate = () => {
             <ProductForm
                 newProduct
                 defaultValues={{
-                name: '',
-                description: '',
-                productCode: '',
-                taxRate: 0,
-                price: '',
-                bulkDiscountPrice: '',
-                costPerItem: '',
-                imgList: [],
-                category: '',
-                tags: [],
-                brand: '',
-                startDate: '',
-                startTime: '',
-                location: '',
-                country: '',
-                address: '',
-                city: '',
-                postcode: '',
-            }}
+                    name: '',
+                    description: '',
+                    productCode: '',
+                    taxRate: 0,
+                    price: '',
+                    bulkDiscountPrice: '',
+                    costPerItem: '',
+                    imgList: [],
+                    category: '',
+                    tags: [],
+                    brand: '',
+                    startDate: '',
+                    startTime: '',
+                    location: '',
+                    country: '',
+                    address: '',
+                    city: '',
+                    postcode: '',
+
+                    // 🔽 добавь это
+                    ageRestriction: 'NO_RESTRICTION',
+                    eventTypes: 'CONCERT',     // (или переименуй поле в eventType)
+                    languages: [],             // массив кодов языков
+                    refundPolicy: 'NO_REFUND',
+                    ticketPools: [],           // для useFieldArray
+                }}
                 onFormSubmit={handleFormSubmit}
-            >
+                >
                 <Container>
                     <div className="flex items-center justify-between px-8">
                         <span></span>
