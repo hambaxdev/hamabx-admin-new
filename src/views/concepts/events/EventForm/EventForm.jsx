@@ -1,0 +1,107 @@
+import { useEffect } from 'react'
+import { Form } from '@/components/ui/Form'
+import Container from '@/components/shared/Container'
+import BottomStickyBar from '@/components/template/BottomStickyBar'
+import GeneralSection from './components/GeneralSection'
+import PricingSection from './components/PricingSection'
+import ImageSection from './components/ImageSection'
+import AttributeSection from './components/AttributeSection'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import isEmpty from 'lodash/isEmpty'
+import AddressSection from './components/CustomAddressSection'
+
+const validationSchema = z.object({
+  name: z.string().min(1, { message: 'Event name required!' }),
+  description: z.string().min(1, { message: 'Event description required!' }),
+  price: z.union([z.string(), z.number()], {
+    errorMap: () => ({ message: 'Price required!' }),
+  }),
+  imgList: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    img: z.string(),
+  })).min(1, { message: 'At least 1 image required!' }),
+
+  startDate: z.string().optional(),
+  startTime: z.string().optional(),
+  location: z.string().optional(),
+  country: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  postcode: z.string().optional(),
+
+  ageRestriction: z.string().optional(),
+  eventTypes: z.string().optional(),
+  languages: z.array(z.string()).optional(),
+  refundPolicy: z.string().optional(),
+
+  ticketPools: z.array(z.object({
+    name: z.string().optional(),
+    price: z.union([z.string(), z.number()]).optional(),
+    startDate: z.any().optional(),
+    endDate: z.any().optional(),
+    limitTickets: z.boolean().optional(),
+    quantity: z.union([z.string(), z.number()]).optional(),
+  })).optional(),
+})
+
+const EventForm = (props) => {
+    const {
+        onFormSubmit,
+        defaultValues = {
+            imgList: [],
+        },
+        children,
+    } = props
+
+    const {
+        handleSubmit,
+        reset,
+        formState: { errors },
+        control,
+        watch,
+        setValue
+    } = useForm({
+        defaultValues: {
+            ...defaultValues,
+        },
+        resolver: zodResolver(validationSchema),
+    })
+
+    useEffect(() => {
+        if (!isEmpty(defaultValues)) {
+            reset(defaultValues)
+        }
+    }, [JSON.stringify(defaultValues), reset])
+
+    const onSubmit = (values) => {
+        onFormSubmit?.(values)
+    }
+
+    return (
+        <Form
+            className="flex w-full h-full"
+            containerClassName="flex flex-col w-full justify-between"
+            onSubmit={handleSubmit(onSubmit)}
+        >
+            <Container>
+                <div className="flex flex-col xl:flex-row gap-4">
+                    <div className="gap-4 flex flex-col flex-auto">
+                        <GeneralSection control={control} errors={errors} />
+                        <AddressSection control={control} errors={errors} />
+                        <PricingSection control={control} errors={errors} watch={watch} setValue={setValue} />
+                    </div>
+                    <div className="lg:min-w-[440px] 2xl:w-[500px] gap-4 flex flex-col">
+                        <ImageSection control={control} errors={errors} />
+                        <AttributeSection control={control} errors={errors} />
+                    </div>
+                </div>
+            </Container>
+            <BottomStickyBar>{children}</BottomStickyBar>
+        </Form>
+    )
+}
+
+export default EventForm

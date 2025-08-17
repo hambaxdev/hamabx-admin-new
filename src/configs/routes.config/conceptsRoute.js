@@ -76,31 +76,31 @@ const conceptsRoute = [
         },
     },
     {
-        key: 'concepts.products.productList',
-        path: `${CONCEPTS_PREFIX_PATH}/products/product-list`,
-        component: lazy(() => import('@/views/concepts/products/ProductList')),
+        key: 'concepts.events.eventList',
+        path: `${CONCEPTS_PREFIX_PATH}/events/event-list`,
+        component: lazy(() => import('@/views/concepts/events/EventList')),
         authority: [ADMIN, USER],
     },
     {
-        key: 'concepts.products.productEdit',
-        path: `${CONCEPTS_PREFIX_PATH}/products/product-edit/:id`,
-        component: lazy(() => import('@/views/concepts/products/ProductEdit')),
+        key: 'concepts.events.eventEdit',
+        path: `${CONCEPTS_PREFIX_PATH}/events/event-edit/:id`,
+        component: lazy(() => import('@/views/concepts/events/EventEdit')),
         authority: [ADMIN, USER],
         meta: {
             header: {
-                title: 'Edit product',
+                title: 'Edit event',
                 description:
-                    'Quickly manage product details, stock, and availability.',
+                    'Quickly manage event details, schedule, and availability.',
                 contained: true,
             },
             footer: false,
         },
     },
     {
-        key: 'concepts.products.productCreate',
-        path: `${CONCEPTS_PREFIX_PATH}/products/product-create`,
+        key: 'concepts.events.eventCreate',
+        path: `${CONCEPTS_PREFIX_PATH}/events/event-create`,
         component: lazy(
-            () => import('@/views/concepts/products/ProductCreate'),
+            () => import('@/views/concepts/events/EventCreate'),
         ),
         authority: [ADMIN, USER],
         meta: {

@@ -55,8 +55,8 @@ const conceptsNavigationConfig = [
                 subMenu: [],
             },
             {
-                key: 'concepts.products.productList',
-                path: `${CONCEPTS_PREFIX_PATH}/products/product-list`,
+                key: 'concepts.events.eventList',
+                path: `${CONCEPTS_PREFIX_PATH}/events/event-list`,
                 title: 'Events',
                 translateKey: 'nav.conceptsProducts.events',
                 icon: 'events',
