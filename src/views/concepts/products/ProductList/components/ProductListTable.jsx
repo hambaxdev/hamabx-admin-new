@@ -116,8 +116,6 @@ const handleConfirmDelete = () => {
         isLoading,
         setTableData,
         setSelectAllProduct,
-        setSelectedProduct,
-        selectedProduct,
         mutate,
     } = useProductList()
 
@@ -208,9 +206,6 @@ const handleConfirmDelete = () => {
 
     const handleSetTableData = (data) => {
         setTableData(data)
-        if (selectedProduct.length > 0) {
-            setSelectAllProduct([])
-        }
     }
 
     const handlePaginationChange = (page) => {
@@ -232,23 +227,9 @@ const handleConfirmDelete = () => {
         handleSetTableData(newTableData)
     }
 
-    const handleRowSelect = (checked, row) => {
-        setSelectedProduct(checked, row)
-    }
-
-    const handleAllRowSelect = (checked, rows) => {
-        if (checked) {
-            const originalRows = rows.map((row) => row.original)
-            setSelectAllProduct(originalRows)
-        } else {
-            setSelectAllProduct([])
-        }
-    }
-
     return (
         <>
             <DataTable
-                selectable
                 columns={columns}
                 data={productList}
                 noData={!isLoading && productList.length === 0}
@@ -260,14 +241,9 @@ const handleConfirmDelete = () => {
                     pageIndex: tableData.pageIndex,
                     pageSize: tableData.pageSize,
                 }}
-                checkboxChecked={(row) =>
-                    selectedProduct.some((selected) => selected.id === row.id)
-                }
                 onPaginationChange={handlePaginationChange}
                 onSelectChange={handleSelectChange}
                 onSort={handleSort}
-                onCheckBoxChange={handleRowSelect}
-                onIndeterminateCheckBoxChange={handleAllRowSelect}
             />
             <ConfirmDialog
                 isOpen={deleteConfirmationOpen}
