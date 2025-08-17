@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router'
 import { TbPencil, TbTrash } from 'react-icons/tb'
 import { FiPackage } from 'react-icons/fi'
 import { NumericFormat } from 'react-number-format'
+import { apiDeleteEvent } from '@/services/EventService.js'
 
 // Helper to format dates as dd.mm.YYYY
 const formatDateRu = (value) => {
@@ -93,19 +94,25 @@ const EventListTable = () => {
         navigate(`/concepts/events/event-edit/${row.id}`)
     }
 
-    const handleConfirmDelete = () => {
-      const newProductList = productList.filter((product) => product.id !== toDeleteId)
+    const handleConfirmDelete = async () => {
+      try {
+        if (toDeleteId) {
+          await apiDeleteEvent(toDeleteId)
+        }
+        const newProductList = productList.filter((product) => product.id !== toDeleteId)
 
-      setSelectAllProduct([])
-      mutate(
-        (prev) => {
-          if (!prev) return { data: newProductList, total: newProductList.length }
-          return { ...prev, data: newProductList, total: newProductList.length }
-        },
-        false
-      )
-      setDeleteConfirmationOpen(false)
-      setToDeleteId('')
+        setSelectAllProduct([])
+        mutate(
+          (prev) => {
+            if (!prev) return { data: newProductList, total: newProductList.length }
+            return { ...prev, data: newProductList, total: newProductList.length }
+          },
+          false
+        )
+      } finally {
+        setDeleteConfirmationOpen(false)
+        setToDeleteId('')
+      }
     }
 
     const {

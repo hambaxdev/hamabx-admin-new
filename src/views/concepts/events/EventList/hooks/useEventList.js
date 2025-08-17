@@ -1,4 +1,4 @@
-import { apiGetProductList } from '@/services/ProductService'
+import { apiGetProductList } from '@/services/EventService.js'
 import useSWR from 'swr'
 import { useEventListStore } from '../store/eventListStore'
 

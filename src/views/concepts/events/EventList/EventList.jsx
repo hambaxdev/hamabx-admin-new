@@ -3,7 +3,6 @@ import AdaptiveCard from '@/components/shared/AdaptiveCard'
 import EventListActionTools from './components/EventListActionTools'
 import EventListTableTools from './components/EventListTableTools'
 import EventListTable from './components/EventListTable'
-import EventListSelected from './components/EventListSelected'
 
 const EventList = () => {
     return (
@@ -20,7 +19,6 @@ const EventList = () => {
                     </div>
                 </AdaptiveCard>
             </Container>
-            <EventListSelected />
         </>
     )
 }

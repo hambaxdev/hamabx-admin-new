@@ -7,7 +7,7 @@ import EventForm from '../EventForm'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { TbTrash } from 'react-icons/tb'
 import { useNavigate } from 'react-router'
-import { apiPostProduct } from '@/services/ProductService'
+import { apiPostProduct } from '@/services/EventService.js'
 
 const EventCreate = () => {
     const navigate = useNavigate()

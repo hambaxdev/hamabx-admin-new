@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { apiGetProductFormOptions } from '@/services/ProductService'
+import { apiGetProductFormOptions } from '@/services/EventService.js'
 
 const mapToSelect = (items = []) =>
     items.map(({ code, label }) => ({ value: code, label }))

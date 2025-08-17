@@ -6,7 +6,7 @@ import toast from '@/components/ui/toast'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import EventForm from '../EventForm'
 import NoProductFound from '@/assets/svg/NoProductFound'
-import { apiGetProduct } from '@/services/ProductService'
+import { apiGetProduct, apiDeleteEvent } from '@/services/EventService.js'
 import { TbTrash, TbArrowNarrowLeft } from 'react-icons/tb'
 import { useParams, useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -83,13 +83,17 @@ const EventEdit = () => {
         navigate('/concepts/events/event-list')
     }
 
-    const handleConfirmDelete = () => {
-        setDeleteConfirmationOpen(true)
-        toast.push(
-            <Notification type="success">Event deleted!</Notification>,
-            { placement: 'top-center' },
-        )
-        navigate('/concepts/events/event-list')
+    const handleConfirmDelete = async () => {
+        try {
+            await apiDeleteEvent(id)
+            toast.push(
+                <Notification type="success">Event deleted!</Notification>,
+                { placement: 'top-center' },
+            )
+            navigate('/concepts/events/event-list')
+        } finally {
+            setDeleteConfirmationOpen(false)
+        }
     }
 
     return (

@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import useEventList from '../hooks/useEventList'
 import { TbChecks } from 'react-icons/tb'
+import { apiDeleteEvent } from '@/services/EventService.js'
 
 const EventListSelected = () => {
     const {
@@ -24,21 +25,28 @@ const EventListSelected = () => {
         setDeleteConfirmationOpen(false)
     }
 
-    const handleConfirmDelete = () => {
-        const newProductList = productList.filter((product) => {
-            return !selectedProduct.some(
-                (selected) => selected.id === product.id,
+    const handleConfirmDelete = async () => {
+        // Call backend delete for each selected event
+        try {
+            if (selectedProduct.length) {
+                await Promise.all(selectedProduct.map((item) => apiDeleteEvent(item.id)))
+            }
+            const newProductList = productList.filter((product) => {
+                return !selectedProduct.some(
+                    (selected) => selected.id === product.id,
+                )
+            })
+            setSelectAllProduct([])
+            mutate(
+                {
+                    list: newProductList,
+                    total: productListTotal - selectedProduct.length,
+                },
+                false,
             )
-        })
-        setSelectAllProduct([])
-        mutate(
-            {
-                list: newProductList,
-                total: productListTotal - selectedProduct.length,
-            },
-            false,
-        )
-        setDeleteConfirmationOpen(false)
+        } finally {
+            setDeleteConfirmationOpen(false)
+        }
     }
 
     return (

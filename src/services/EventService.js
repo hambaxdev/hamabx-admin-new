@@ -24,6 +24,13 @@ export async function apiPostProduct({ id, ...params }) {
     })
 }
 
+export async function apiDeleteEvent(id) {
+    return ApiService.fetchDataWithAxios({
+        url: `/event/api/v1/events/${id}`,
+        method: 'delete',
+    })
+}
+
 export async function apiGetProductFormOptions() {
     const res = await ApiService.fetchDataWithAxios({
         url: '/event/api/enums/product-form-options',
