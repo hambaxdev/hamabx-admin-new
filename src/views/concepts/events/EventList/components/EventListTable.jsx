@@ -126,88 +126,121 @@ const EventListTable = () => {
     } = useEventList()
 
     const columns = useMemo(
-  () => [
-    {
-      header: 'Event',
-      accessorKey: 'name',
-      cell: (props) => <EventColumn row={props.row.original} />,
-    },
-    {
-      header: 'When',
-      id: 'when',
-      cell: (props) => {
-        const { startDate, startTime } = props.row.original
-        const formattedDate = formatDateRu(startDate)
-        return (
-          <div className="leading-tight">
-            <div className="font-semibold">{formattedDate}</div>
-            <div className="text-xs opacity-70">{startTime || ''}</div>
-          </div>
-        )
-      },
-    },
-    {
-      header: 'Location',
-      id: 'location',
-      cell: (props) => {
-        const { locationName, city, country } = props.row.original
-        return (
-          <div className="leading-tight">
-            <div className="font-semibold">{locationName || city || '—'}</div>
-            <div className="text-xs opacity-70">
-              {[city, country].filter(Boolean).join(', ')}
-            </div>
-          </div>
-        )
-      },
-    },
-    {
-      header: 'Price',
-      accessorKey: 'price',
-      cell: (props) => {
-        const { price, currency } = props.row.original
-        if (price == null) return <span className="opacity-60">—</span>
-        const prefix = currency === 'EUR' ? '€' : ''
-        return (
-          <span className="font-bold heading-text">
-            <NumericFormat
-              fixedDecimalScale
-              prefix={prefix}
-              displayType="text"
-              value={price}
-              decimalScale={2}
-              thousandSeparator
-            />
-          </span>
-        )
-      },
-    },
-    {
-      header: 'Type',
-      id: 'eventType',
-      cell: (props) => {
-        const { eventType, ageRestriction } = props.row.original
-        return (
-          <div className="leading-tight">
-            <div className="font-semibold">{eventType || '—'}</div>
-            <div className="text-xs opacity-70">{ageRestriction || ''}</div>
-          </div>
-        )
-      },
-    },
-    {
-      header: '',
-      id: 'action',
-      cell: (props) => (
-        <ActionColumn
-          onEdit={() => handleEdit(props.row.original)}
-          onDelete={() => handleDelete(props.row.original)}
-        />
-      ),
-    },
-  ],
-  []
-)
+        () => {
+            const makeClickable = (content, row) => (
+                <div
+                    className="cursor-pointer"
+                    onClick={() => handleEdit(row)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            handleEdit(row)
+                        }
+                    }}
+                >
+                    {content}
+                </div>
+            )
+
+            return [
+                {
+                    header: 'Event',
+                    accessorKey: 'name',
+                    cell: (props) =>
+                        makeClickable(<EventColumn row={props.row.original} />, props.row.original),
+                },
+                {
+                    header: 'When',
+                    id: 'when',
+                    cell: (props) => {
+                        const { startDate, startTime } = props.row.original
+                        const formattedDate = formatDateRu(startDate)
+                        return makeClickable(
+                            (
+                                <div className="leading-tight">
+                                    <div className="font-semibold">{formattedDate}</div>
+                                    <div className="text-xs opacity-70">{startTime || ''}</div>
+                                </div>
+                            ),
+                            props.row.original,
+                        )
+                    },
+                },
+                {
+                    header: 'Location',
+                    id: 'location',
+                    cell: (props) => {
+                        const { locationName, city, country } = props.row.original
+                        return makeClickable(
+                            (
+                                <div className="leading-tight">
+                                    <div className="font-semibold">{locationName || city || '—'}</div>
+                                    <div className="text-xs opacity-70">
+                                        {[city, country].filter(Boolean).join(', ')}
+                                    </div>
+                                </div>
+                            ),
+                            props.row.original,
+                        )
+                    },
+                },
+                {
+                    header: 'Price',
+                    accessorKey: 'price',
+                    cell: (props) => {
+                        const { price, currency } = props.row.original
+                        if (price == null)
+                            return makeClickable(<span className="opacity-60">—</span>, props.row.original)
+                        const prefix = currency === 'EUR' ? '€' : ''
+                        return makeClickable(
+                            (
+                                <span className="font-bold heading-text">
+                                    <NumericFormat
+                                        fixedDecimalScale
+                                        prefix={prefix}
+                                        displayType="text"
+                                        value={price}
+                                        decimalScale={2}
+                                        thousandSeparator
+                                    />
+                                </span>
+                            ),
+                            props.row.original,
+                        )
+                    },
+                },
+                {
+                    header: 'Type',
+                    id: 'eventType',
+                    cell: (props) => {
+                        const { eventType, ageRestriction } = props.row.original
+                        return makeClickable(
+                            (
+                                <div className="leading-tight">
+                                    <div className="font-semibold">{eventType || '—'}</div>
+                                    <div className="text-xs opacity-70">{ageRestriction || ''}</div>
+                                </div>
+                            ),
+                            props.row.original,
+                        )
+                    },
+                },
+                {
+                    header: '',
+                    id: 'action',
+                    cell: (props) => (
+                        <ActionColumn
+                            onEdit={() => handleEdit(props.row.original)}
+                            onDelete={() => handleDelete(props.row.original)}
+                        />
+                    ),
+                },
+            ]
+        },
+        [],
+    )
 
 
     const handleSetTableData = (data) => {
